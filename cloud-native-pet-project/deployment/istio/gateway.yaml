@@ -1,0 +1,45 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: ingressgateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - '*'
+    port:
+      number: 80
+      name: http
+      protocol: HTTP
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: ingressgateway
+spec:
+  hosts:
+  - '*'
+  gateways:
+  - ingressgateway
+  http:
+  - match:
+    - uri:
+        prefix: /app/dog
+    rewrite:
+      uri: "/dog"
+    route:
+    - destination:
+        host: dog-service
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: /app/cat
+    rewrite:
+      uri: "/cat"
+    route:
+    - destination:
+        host: cat-service
+        port:
+          number: 8080
